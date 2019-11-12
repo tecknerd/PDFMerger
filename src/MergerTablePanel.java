@@ -53,7 +53,7 @@ public class MergerTablePanel extends JPanel {
 
 	private PDFMergerUtility PDFmerger = new PDFMergerUtility();
 	private FileNameExtensionFilter fileFilter = new FileNameExtensionFilter(".pdf", "pdf", ".PDF", "PDF");
-	
+
 	private String lastSelectedDirectory = " ";
 
 	private ActionListener moveRowAction = new ActionListener() {
@@ -101,9 +101,9 @@ public class MergerTablePanel extends JPanel {
 			fc.setAcceptAllFileFilterUsed(false);
 			fc.setMultiSelectionEnabled(true); 
 			int fcResponse = fc.showOpenDialog(null);
-			
+
 			lastSelectedDirectory = fc.getSelectedFiles()[fc.getSelectedFiles().length - 1].getPath();
-			
+
 			if (fcResponse == JFileChooser.APPROVE_OPTION) {
 				ObservableTableModel model = (ObservableTableModel) inputTable.getModel();
 
@@ -129,22 +129,22 @@ public class MergerTablePanel extends JPanel {
 			fc.setSelectedFile(new File("merged.pdf"));
 
 			int fcResponse = fc.showSaveDialog(null);
-			
+
 			lastSelectedDirectory = fc.getSelectedFile().getPath();
-			
+
 			if (fcResponse == JFileChooser.APPROVE_OPTION) {
-				
+
 				new Thread (new Runnable() {
 
 					@Override
 					public void run() {
 						PDFProgressBar bar = new PDFProgressBar(false);
 						bar.start();
-						
+
 						String destinationFilePath = fc.getSelectedFile().getAbsolutePath();
 						String keyWords = " ";
 						String subjects = " ";
-						
+
 						ObservableTableModel model = (ObservableTableModel) inputTable.getModel();
 
 						if (!destinationFilePath.endsWith(".pdf")) {
@@ -160,16 +160,16 @@ public class MergerTablePanel extends JPanel {
 								File sourceFile = (File) model.getValueAt(i, 0);
 								bar.updateText("Adding " + sourceFile.getName() + " to merge queue");
 								PDFmerger.addSource(sourceFile);
-								
+
 								PDDocument doc = PDDocument.load(sourceFile);
 								if (Objects.nonNull(doc.getDocumentInformation().getKeywords())) {
 									keyWords += doc.getDocumentInformation().getKeywords(); 
 								}
-								
+
 								if (Objects.nonNull(doc.getDocumentInformation().getSubject())) {
 									subjects += doc.getDocumentInformation().getSubject(); 
 								}
-								
+
 								doc.close();
 							} catch (IOException e) {
 								e.printStackTrace();
@@ -178,7 +178,7 @@ public class MergerTablePanel extends JPanel {
 
 						try {
 							bar.updateText("Merging " + model.getRowCount() + " files");			
-							
+
 							PDDocumentInformation docInfo = new PDDocumentInformation();
 							docInfo.setTitle(PDFmerger.getDestinationFileName());
 							docInfo.setAuthor(System.getProperty("user.name"));
@@ -186,16 +186,16 @@ public class MergerTablePanel extends JPanel {
 							docInfo.setSubject(subjects.trim());
 							docInfo.setKeywords(keyWords.trim());
 							docInfo.setCreationDate(Calendar.getInstance());
-							
+
 							PDFmerger.setDestinationDocumentInformation(docInfo);
 							PDFmerger.mergeDocuments(MemoryUsageSetting.setupMixed(10000000));
 							((ObservableTableModel) outputTable.getModel()).addRow(new File[] {mergedFile});
 						} catch (IOException e) {
 							e.printStackTrace();
 						}
-						
+
 						bar.stop();
-						
+
 						if (!EventQueue.isDispatchThread()) {
 							SwingUtilities.invokeLater(new Runnable() {
 
@@ -210,67 +210,6 @@ public class MergerTablePanel extends JPanel {
 
 					}
 				}).start();
-//				
-//				(new SwingWorker<Object, Object>() {
-//					PDFProgressBar bar = new PDFProgressBar();
-//					@Override
-//					protected Boolean doInBackground() throws Exception {
-//						bar.start();
-//
-//						String filePath = fc.getSelectedFile().getAbsolutePath();
-//
-//						ObservableTableModel model = (ObservableTableModel) inputTable.getModel();
-//
-//						if (!filePath.endsWith(".pdf")) {
-//							filePath += ".pdf";
-//						}
-//
-//						File mergedFile = new File(filePath);
-//
-//						PDFmerger.setDestinationFileName(filePath);
-//
-//						for (int i = 0; i < model.getRowCount(); i++) {
-//							PDFmerger.addSource((File) model.getValueAt(i, 0));
-//						}
-//
-//						try {
-//							PDFmerger.mergeDocuments(MemoryUsageSetting.setupMixed(10000000));
-//							((ObservableTableModel) outputTable.getModel()).addRow(new File[] {mergedFile});
-//						} catch (IOException e) {
-//							// TODO Auto-generated catch block
-//							e.printStackTrace();
-//						}
-//
-//						//						pdfDocs.forEach(doc -> {
-//						//							try {
-//						//								doc.close();
-//						//							} catch (IOException e) {
-//						//								// TODO Auto-generated catch block
-//						//								e.printStackTrace();
-//						//							}
-//						//						});
-//
-//						return null;
-//					}
-//
-//					@Override
-//					protected void done() {
-//						super.done();
-//						bar.stop();
-//						if (!EventQueue.isDispatchThread()) {
-//							SwingUtilities.invokeLater(new Runnable() {
-//
-//								@Override
-//								public void run() {
-//									// TODO Auto-generated method stub
-//									JOptionPane.showMessageDialog(null, "Documents merged");
-//								}
-//							});
-//						} else {
-//							JOptionPane.showMessageDialog(null, "Documents merged");
-//						}
-//					}
-//				}).run();
 			}
 		}
 	};
