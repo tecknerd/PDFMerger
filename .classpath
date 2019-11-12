@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="C:/Dev/Java/PDFMerger/lib/pdfbox-2.0.15.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/C:/Dev/Java/PDFMerger/lib/pdfbox-2.0.15-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Dev/Java/PDFMerger/lib/commons-logging-1.2.jar"/>
+	<classpathentry kind="lib" path="C:/Dev/Java/PDFMerger/lib/pdfbox-tools-2.0.15.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/C:/Dev/Java/PDFMerger/lib/pdfbox-tools-2.0.15-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Dev/Java/PDFMerger/lib/fontbox-2.0.15.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/C:/Dev/Java/PDFMerger/lib/fontbox-2.0.15-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
