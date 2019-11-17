@@ -5,7 +5,6 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Calendar;
 import java.util.Objects;
 import javax.swing.BorderFactory;
@@ -107,7 +106,6 @@ public class MergerTablePanel extends JPanel {
 
 				for (File file :fc.getSelectedFiles()) {
 					model.addRow(new File[] {file});
-
 				}
 
 				model.fireTableDataChanged();
@@ -122,10 +120,9 @@ public class MergerTablePanel extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
+			File selectedFile = new File("merged.pdf");
 			JFileChooser fc = lastSelectedDirectory.equals(" ") ? new JFileChooser() : new JFileChooser(lastSelectedDirectory);
 			fc.addChoosableFileFilter(fileFilter);
-
-			File selectedFile = new File("merged.pdf");
 			fc.setSelectedFile(selectedFile);
 
 			while (true) {
@@ -134,7 +131,6 @@ public class MergerTablePanel extends JPanel {
 				lastSelectedDirectory = selectedFile.getPath();
 				
 				if (fcResponse == JFileChooser.APPROVE_OPTION) {	
-					
 					if (!selectedFile.getAbsolutePath().endsWith(".pdf")) {
 						selectedFile = new File(selectedFile.getAbsolutePath() + ".pdf");
 					}
@@ -147,7 +143,6 @@ public class MergerTablePanel extends JPanel {
 							merge(selectedFile);
 							break;
 						}
-
 					} else {
 						merge(selectedFile);
 						break;
@@ -167,13 +162,10 @@ public class MergerTablePanel extends JPanel {
 					bar.start();
 
 					File destinationFile = file;
+					ObservableTableModel model = (ObservableTableModel) inputTable.getModel();
+					PDFmerger.setDestinationFileName(destinationFile.getAbsolutePath());
 					String keyWords = " ";
 					String subjects = " ";
-
-					ObservableTableModel model = (ObservableTableModel) inputTable.getModel();
-//					File mergedFile = new File(destinationFilePath);
-
-					PDFmerger.setDestinationFileName(destinationFile.getAbsolutePath());
 
 					for (int i = 0; i < model.getRowCount(); i++) {
 						try {
