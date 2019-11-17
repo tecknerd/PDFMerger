@@ -2,10 +2,10 @@ import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Calendar;
 import java.util.Objects;
 import javax.swing.BorderFactory;
@@ -24,11 +24,8 @@ import javax.swing.border.TitledBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
-import org.apache.pdfbox.multipdf.PDFMergerUtility.DocumentMergeMode;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
-import org.apache.pdfbox.pdmodel.PDPage;
-
 import ObservableTools.ObservableTableModel;
 import ObservableTools.TableRowObserverButton;
 
@@ -100,6 +97,7 @@ public class MergerTablePanel extends JPanel {
 			fc.addChoosableFileFilter(fileFilter);
 			fc.setAcceptAllFileFilterUsed(false);
 			fc.setMultiSelectionEnabled(true); 
+			
 			int fcResponse = fc.showOpenDialog(null);
 
 			lastSelectedDirectory = fc.getSelectedFiles()[fc.getSelectedFiles().length - 1].getPath();
@@ -126,91 +124,111 @@ public class MergerTablePanel extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 			JFileChooser fc = lastSelectedDirectory.equals(" ") ? new JFileChooser() : new JFileChooser(lastSelectedDirectory);
 			fc.addChoosableFileFilter(fileFilter);
-			fc.setSelectedFile(new File("merged.pdf"));
 
-			int fcResponse = fc.showSaveDialog(null);
+			File selectedFile = new File("merged.pdf");
+			fc.setSelectedFile(selectedFile);
 
-			lastSelectedDirectory = fc.getSelectedFile().getPath();
-
-			if (fcResponse == JFileChooser.APPROVE_OPTION) {
-
-				new Thread (new Runnable() {
-
-					@Override
-					public void run() {
-						PDFProgressBar bar = new PDFProgressBar(false);
-						bar.start();
-
-						String destinationFilePath = fc.getSelectedFile().getAbsolutePath();
-						String keyWords = " ";
-						String subjects = " ";
-
-						ObservableTableModel model = (ObservableTableModel) inputTable.getModel();
-
-						if (!destinationFilePath.endsWith(".pdf")) {
-							destinationFilePath += ".pdf";
+			while (true) {
+				int fcResponse = fc.showSaveDialog(null);
+				selectedFile = fc.getSelectedFile();
+				lastSelectedDirectory = selectedFile.getPath();
+				
+				if (fcResponse == JFileChooser.APPROVE_OPTION) {	
+					
+					if (!selectedFile.getAbsolutePath().endsWith(".pdf")) {
+						selectedFile = new File(selectedFile.getAbsolutePath() + ".pdf");
+					}
+					
+					if (Files.exists(selectedFile.toPath())) {
+						int fileExistsResponse = JOptionPane.showConfirmDialog(null, "A file named " + selectedFile.getName() + " already exists.\n"
+								+ "Do you want to overwrite this file?", "WARNING!", JOptionPane.OK_CANCEL_OPTION);
+						
+						if(fileExistsResponse == JOptionPane.OK_OPTION) {
+							merge(selectedFile);
+							break;
 						}
 
-						File mergedFile = new File(destinationFilePath);
+					} else {
+						merge(selectedFile);
+						break;
+					}
+				} else if (fcResponse == JFileChooser.CANCEL_OPTION) {
+					break;
+				}
+			}
+		}
+		
+		private void merge(File file) {
+			new Thread (new Runnable() {
 
-						PDFmerger.setDestinationFileName(destinationFilePath);
+				@Override
+				public void run() {
+					PDFProgressBar bar = new PDFProgressBar(false);
+					bar.start();
 
-						for (int i = 0; i < model.getRowCount(); i++) {
-							try {
-								File sourceFile = (File) model.getValueAt(i, 0);
-								bar.updateText("Adding " + sourceFile.getName() + " to merge queue");
-								PDFmerger.addSource(sourceFile);
+					File destinationFile = file;
+					String keyWords = " ";
+					String subjects = " ";
 
-								PDDocument doc = PDDocument.load(sourceFile);
-								if (Objects.nonNull(doc.getDocumentInformation().getKeywords())) {
-									keyWords += doc.getDocumentInformation().getKeywords(); 
-								}
+					ObservableTableModel model = (ObservableTableModel) inputTable.getModel();
+//					File mergedFile = new File(destinationFilePath);
 
-								if (Objects.nonNull(doc.getDocumentInformation().getSubject())) {
-									subjects += doc.getDocumentInformation().getSubject(); 
-								}
+					PDFmerger.setDestinationFileName(destinationFile.getAbsolutePath());
 
-								doc.close();
-							} catch (IOException e) {
-								e.printStackTrace();
-							}
-						}
-
+					for (int i = 0; i < model.getRowCount(); i++) {
 						try {
-							bar.updateText("Merging " + model.getRowCount() + " files");			
+							File sourceFile = (File) model.getValueAt(i, 0);
+							bar.updateText("Adding " + sourceFile.getName() + " to merge queue");
+							PDFmerger.addSource(sourceFile);
 
-							PDDocumentInformation docInfo = new PDDocumentInformation();
-							docInfo.setTitle(PDFmerger.getDestinationFileName());
-							docInfo.setAuthor(System.getProperty("user.name"));
-							docInfo.setProducer("TeckNerd PDF Merger");
-							docInfo.setSubject(subjects.trim());
-							docInfo.setKeywords(keyWords.trim());
-							docInfo.setCreationDate(Calendar.getInstance());
+							PDDocument doc = PDDocument.load(sourceFile);
+							if (Objects.nonNull(doc.getDocumentInformation().getKeywords())) {
+								keyWords += doc.getDocumentInformation().getKeywords(); 
+							}
 
-							PDFmerger.setDestinationDocumentInformation(docInfo);
-							PDFmerger.mergeDocuments(MemoryUsageSetting.setupMixed(10000000));
-							((ObservableTableModel) outputTable.getModel()).addRow(new File[] {mergedFile});
+							if (Objects.nonNull(doc.getDocumentInformation().getSubject())) {
+								subjects += doc.getDocumentInformation().getSubject(); 
+							}
+
+							doc.close();
 						} catch (IOException e) {
 							e.printStackTrace();
 						}
-
-						bar.stop();
-
-						if (!EventQueue.isDispatchThread()) {
-							SwingUtilities.invokeLater(new Runnable() {
-
-								@Override
-								public void run() {
-									JOptionPane.showMessageDialog(null, "Documents merged");
-								}
-							});
-						} else {
-							JOptionPane.showMessageDialog(null, "Documents merged");
-						}
-
 					}
-				}).start();
-			}
+
+					try {
+						bar.updateText("Merging " + model.getRowCount() + " files");			
+
+						PDDocumentInformation docInfo = new PDDocumentInformation();
+						docInfo.setTitle(PDFmerger.getDestinationFileName());
+						docInfo.setAuthor(System.getProperty("user.name"));
+						docInfo.setProducer("TeckNerd PDF Merger");
+						docInfo.setSubject(subjects.trim());
+						docInfo.setKeywords(keyWords.trim());
+						docInfo.setCreationDate(Calendar.getInstance());
+
+						PDFmerger.setDestinationDocumentInformation(docInfo);
+						PDFmerger.mergeDocuments(MemoryUsageSetting.setupMixed(10000000));
+						((ObservableTableModel) outputTable.getModel()).addRow(new File[] {destinationFile});
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+
+					bar.stop();
+
+					if (!EventQueue.isDispatchThread()) {
+						SwingUtilities.invokeLater(new Runnable() {
+
+							@Override
+							public void run() {
+								JOptionPane.showMessageDialog(null, "Documents merged");
+							}
+						});
+					} else {
+						JOptionPane.showMessageDialog(null, "Documents merged");
+					}
+				}
+			}).start();
 		}
 	};
 

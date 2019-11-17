@@ -34,6 +34,7 @@ public class PDFProgressBar extends JProgressBar {
 	}
 
 	public PDFProgressBar(boolean cancellable) {
+		super();
 		this.setIndeterminate(true);
 
 		textLabel = new JLabel(" ");

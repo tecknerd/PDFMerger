@@ -61,6 +61,7 @@ public class PDFViewDialog extends JDialog{
 							e.printStackTrace();
 						}
 					} else {
+						bar.updateText("Canceling...");
 						break;
 					}
 				}
