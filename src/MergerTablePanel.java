@@ -98,8 +98,8 @@ public class MergerTablePanel extends JPanel {
 			fc.setMultiSelectionEnabled(true); 
 			
 			int fcResponse = fc.showOpenDialog(null);
-
-			lastSelectedDirectory = fc.getSelectedFiles()[fc.getSelectedFiles().length - 1].getPath();
+			
+			lastSelectedDirectory = fc.getCurrentDirectory().getAbsolutePath();
 
 			if (fcResponse == JFileChooser.APPROVE_OPTION) {
 				ObservableTableModel model = (ObservableTableModel) inputTable.getModel();
@@ -128,7 +128,7 @@ public class MergerTablePanel extends JPanel {
 			while (true) {
 				int fcResponse = fc.showSaveDialog(null);
 				selectedFile = fc.getSelectedFile();
-				lastSelectedDirectory = selectedFile.getPath();
+				lastSelectedDirectory = fc.getCurrentDirectory().getAbsolutePath();
 				
 				if (fcResponse == JFileChooser.APPROVE_OPTION) {	
 					if (!selectedFile.getAbsolutePath().endsWith(".pdf")) {
