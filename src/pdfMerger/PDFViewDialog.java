@@ -1,3 +1,4 @@
+package pdfMerger;
 import java.io.IOException;
 
 import javax.swing.ImageIcon;
@@ -45,8 +46,6 @@ public class PDFViewDialog extends JDialog{
 
 				PDFRenderer pdfRenderer = new PDFRenderer(document);				
 
-				long startTime = System.currentTimeMillis();
-
 				int totalPages = document.getNumberOfPages();
 				for (int pageNum = 0; pageNum < totalPages; pageNum++) {
 					if(!bar.isCancelled()) {
@@ -71,9 +70,6 @@ public class PDFViewDialog extends JDialog{
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-
-				long endTime = System.currentTimeMillis();
-				System.out.println("Rendering took: " + (endTime - startTime) + " ms");
 
 				bar.stop();
 

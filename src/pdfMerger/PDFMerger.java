@@ -1,3 +1,4 @@
+package pdfMerger;
 import java.awt.Dimension;
 import java.io.IOException;
 import javax.swing.JFrame;

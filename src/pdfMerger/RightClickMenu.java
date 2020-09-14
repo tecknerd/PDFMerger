@@ -1,3 +1,4 @@
+package pdfMerger;
 import java.awt.Dialog.ModalityType;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -26,7 +27,7 @@ import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 
-public class RowMenu implements MouseListener {
+public class RightClickMenu implements MouseListener {
 
 	private JPopupMenu rightClickMenu;
 	private JMenuItem deleteItem;
@@ -87,7 +88,7 @@ public class RowMenu implements MouseListener {
 					PDFProgressBar bar = new PDFProgressBar();
 					bar.updateText("Fetching metadata");
 					bar.start();
-					
+
 					File file = (File) table.getValueAt(table.getSelectedRow(), 0);
 					try {
 						PDDocument doc = PDDocument.load(file);
@@ -117,21 +118,21 @@ public class RowMenu implements MouseListener {
 						metaDataDialog.setSize(400, 400);
 						metaDataDialog.setResizable(true);
 						metaDataDialog.setLocationRelativeTo(null);
-						
+
 						bar.stop();
 						metaDataDialog.setVisible(true);
 
 						doc.close();
-						
+
 					} catch (IOException e1) {
 						e1.printStackTrace();
 					}					
 				}
-				
+
 				private String nullCheck(String s) {
 					return s == null ? " " : s;
 				}
-				
+
 				private String formatDate(Calendar cal) {
 					DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 					return Objects.isNull(cal) ? " " : dateFormat.format(cal.getTime());
@@ -140,7 +141,7 @@ public class RowMenu implements MouseListener {
 		}
 	};
 
-	public RowMenu(JTable t) {
+	public RightClickMenu(JTable t) {
 		table = t;
 
 		deleteItem = new JMenuItem("Remove");

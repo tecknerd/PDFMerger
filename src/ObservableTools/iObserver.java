@@ -1,5 +1,5 @@
 package ObservableTools;
 
 public interface iObserver {
-	public void update(int size);
+	public <T> void update(T val);
 }
