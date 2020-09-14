@@ -1,3 +1,4 @@
+package pdfMerger;
 import java.awt.Dialog.ModalityType;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;

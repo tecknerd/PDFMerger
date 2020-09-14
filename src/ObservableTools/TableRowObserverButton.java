@@ -29,9 +29,9 @@ public class TableRowObserverButton extends JButton implements iObserver {
 	}
 	
 	@Override
-	public void update(int size) {
+	public <Integer> void update(Integer size) {
 		if(Objects.nonNull(fn)) {
-			this.setEnabled(fn.apply(size));
+			this.setEnabled(fn.apply((int)size));
 		} else {
 			throw new NullPointerException("Function is not set");
 		}
