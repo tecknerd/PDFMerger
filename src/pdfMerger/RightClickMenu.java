@@ -40,8 +40,7 @@ public class RightClickMenu implements MouseListener {
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			File file = (File) table.getValueAt(table.getSelectedRow(), 0);//files.get(table.getSelectedRow());
-
+			File file = (File) table.getValueAt(table.getSelectedRow(), 0);
 			if (Objects.nonNull(file)) {
 				SwingUtilities.invokeLater(new Runnable() {
 
@@ -94,20 +93,18 @@ public class RightClickMenu implements MouseListener {
 						PDDocument doc = PDDocument.load(file);
 						PDDocumentInformation docInfo = doc.getDocumentInformation();
 
-						String newLine = "\n";
-
 						JTextArea textDisplay = new JTextArea();
 						textDisplay.setEditable(false);
-						textDisplay.append("File: " + file.getName() + newLine);
-						textDisplay.append("Title: " + nullCheck(docInfo.getTitle()) + newLine);
-						textDisplay.append("Author: " + nullCheck(docInfo.getAuthor()) + newLine);
-						textDisplay.append("Producer: " + nullCheck(docInfo.getProducer() + newLine));
-						textDisplay.append("Subject: " + nullCheck(docInfo.getSubject()) + newLine);
-						textDisplay.append("Keywords: " + nullCheck(docInfo.getKeywords()) + newLine);
-						textDisplay.append("Number of pages: " + doc.getNumberOfPages() + newLine);
-						textDisplay.append("Creation date: " + formatDate(docInfo.getCreationDate()) + newLine);
-						textDisplay.append("Modification date: " + formatDate(docInfo.getModificationDate()) + newLine);
-						textDisplay.append("Trapped: " + nullCheck(docInfo.getTrapped()) + newLine);
+						textDisplay.append("File: " + file.getName() + "\n");
+						textDisplay.append("Title: " + nullCheck(docInfo.getTitle()) + "\n");
+						textDisplay.append("Author: " + nullCheck(docInfo.getAuthor()) + "\n");
+						textDisplay.append("Producer: " + nullCheck(docInfo.getProducer() + "\n"));
+						textDisplay.append("Subject: " + nullCheck(docInfo.getSubject()) + "\n");
+						textDisplay.append("Keywords: " + nullCheck(docInfo.getKeywords()) + "\n");
+						textDisplay.append("Number of pages: " + doc.getNumberOfPages() + "\n");
+						textDisplay.append("Creation date: " + formatDate(docInfo.getCreationDate()) + "\n");
+						textDisplay.append("Modification date: " + formatDate(docInfo.getModificationDate()) + "\n");
+						textDisplay.append("Trapped: " + nullCheck(docInfo.getTrapped()) + "\n");
 
 						JScrollPane metaDataScroll = new JScrollPane(textDisplay);
 
@@ -181,7 +178,6 @@ public class RightClickMenu implements MouseListener {
 		int row = table.rowAtPoint(e.getPoint());
 
 		if (SwingUtilities.isRightMouseButton(e) && row > -1) {
-			//					rightClickMenu.setLocation(e.getXOnScreen(), e.getYOnScreen());
 			table.setRowSelectionInterval(row, row);
 			rightClickMenu.show(e.getComponent(), e.getX(), e.getY());;
 		}
