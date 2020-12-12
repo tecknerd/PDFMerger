@@ -16,7 +16,7 @@ import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 public class MergeUtility {
 	private static PDFMergerUtility mergeUtility = new PDFMergerUtility();
 
-	public static File merge(Vector<Vector<File>> files, File destinationFile) {
+	public static File merge(Vector<Vector> files, File destinationFile) {
 		PDFProgressBar bar = new PDFProgressBar(false);
 		bar.start();
 
