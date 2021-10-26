@@ -14,11 +14,12 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 
 public class MergeUtility {
-	private static PDFMergerUtility mergeUtility = new PDFMergerUtility();
 
 	public static File merge(Vector<Vector> files, File destinationFile) {
 		PDFProgressBar bar = new PDFProgressBar(false);
 		bar.start();
+		
+		PDFMergerUtility mergeUtility = new PDFMergerUtility();
 
 		mergeUtility.setDestinationFileName(destinationFile.getAbsolutePath());
 		String keyWords = " ";
@@ -49,7 +50,7 @@ public class MergeUtility {
 			bar.updateText("Merging " + files.size() + " files");			
 
 			PDDocumentInformation docInfo = new PDDocumentInformation();
-			docInfo.setTitle(mergeUtility.getDestinationFileName());
+			docInfo.setTitle(destinationFile.getName());
 			docInfo.setAuthor(System.getProperty("user.name"));
 			docInfo.setProducer("TeckNerd PDF Merger");
 			docInfo.setSubject(subjects.trim());
@@ -57,7 +58,7 @@ public class MergeUtility {
 			docInfo.setCreationDate(Calendar.getInstance());
 
 			mergeUtility.setDestinationDocumentInformation(docInfo);
-			mergeUtility.mergeDocuments(MemoryUsageSetting.setupMixed(10000000));
+			mergeUtility.mergeDocuments(MemoryUsageSetting.setupTempFileOnly());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
