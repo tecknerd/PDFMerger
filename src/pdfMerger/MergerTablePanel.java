@@ -160,8 +160,10 @@ public class MergerTablePanel extends JPanel {
 
 			ObservableTableModel model = (ObservableTableModel) ((JTable) ((JButton)(evt.getSource()))
 					.getClientProperty("table")).getModel();
+			
+			model.getDataVector().clear();
 			model.setRowCount(0);
-
+			
 			repaint();
 			revalidate();
 		}
